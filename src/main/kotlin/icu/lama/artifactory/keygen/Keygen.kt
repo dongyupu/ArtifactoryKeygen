@@ -89,7 +89,7 @@ fun main(vararg args: String) {
                 product.isTrial = false
                 product.owner = prompt("Owner(lamadaemon): ", "lamadaemon")
                 product.validFrom = Date()
-                product.type = Product.Type.ENTERPRISE_PLUS
+                product.type = promptLicenseType()
 
                 products += product.id to SignedProduct(product, private, sign)
 
@@ -234,6 +234,19 @@ fun prompt(msg: String, options: List<String>, default: String? = null): String 
     } else {
         println("Illegal input! Please enter one of following options only: " + options.joinToString())
         prompt(msg, options, default)
+    }
+}
+
+fun promptLicenseType(): Product.Type {
+    val types = Product.Type.values().filter { !it.isTrial() }
+    println("Available license types: " + types.joinToString(", ") { it.name })
+    while (true) {
+        val input = prompt("Enter license type(ENTERPRISE_PLUS): ", "ENTERPRISE_PLUS").uppercase()
+        val matched = types.find { it.name == input }
+        if (matched != null) {
+            return matched
+        }
+        println("Illegal license type! Please enter one of following types only: " + types.joinToString(", ") { it.name })
     }
 }
 
